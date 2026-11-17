@@ -1,0 +1,36 @@
+name: Nous local trajectory checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ['3.11', '3.12', '3.13', '3.14']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Offline source tests and synthetic examples
+        run: python -I -S colleague/scripts/training_release_check.py --report "${{ runner.temp }}/nous-public-check.json"
+      - name: Build and validate the standalone package
+        run: python -I -S colleague/scripts/training_build.py --out "${{ runner.temp }}/nous-public-artifacts"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: nous-alpha-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            ${{ runner.temp }}/nous-public-check.json
+            ${{ runner.temp }}/nous-public-artifacts/
+          retention-days: 7
+          if-no-files-found: warn

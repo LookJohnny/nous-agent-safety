@@ -1,9 +1,0 @@
-{
- "scene": "living_room",
- "entities": [
-  {
-   "label": "fall_suspected",
-   "confidence": 0.9
-  }
- ]
-}

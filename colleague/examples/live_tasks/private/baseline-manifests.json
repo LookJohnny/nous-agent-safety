@@ -1,0 +1,28 @@
+{
+  "claude_merge_windows": {
+    "agent": "claude",
+    "function": "merge_windows",
+    "files": {
+      "TASK.md": "e0c7f014faf742e70f9b5cc211542352bab6d8df6a5f096d2a273954bdb141bd",
+      "public_cases.json": "9669b2b8e8b0b86aebc4b53c1180679627bf4328c596df578df037eab6192a80",
+      "solution.py": "f38f9b179dacacc6cdaaa527f29360c2f259da802b8f7a8efad6c6174100d04d",
+      "test_public.py": "21330d89a4299c5ac12a771cacf4146678041a64e1f950e9b1a76e8760efa676"
+    },
+    "mutable": [
+      "solution.py"
+    ]
+  },
+  "codex_event_totals": {
+    "agent": "codex",
+    "function": "event_totals",
+    "files": {
+      "TASK.md": "66034cc7263ec77776af4ae6d4e58e9f08ed8ae03189de797425e778f94e107a",
+      "public_cases.json": "631bb3bdbe4d280b4525cb04d278d0a911f08d7af6b81f83b44e5fc9c7740335",
+      "solution.py": "762c36956dcc7a063149fcf7334f807cc1354ed432a483f81dcea1059d29acac",
+      "test_public.py": "0e4f8b9188a77862deb1e5f4e8b7f59e7d022d91a2e2bf57fc3627dca5f74405"
+    },
+    "mutable": [
+      "solution.py"
+    ]
+  }
+}

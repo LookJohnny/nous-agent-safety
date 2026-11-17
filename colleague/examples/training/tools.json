@@ -1,0 +1,17 @@
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "fixture_lookup",
+        "description": "SYNTHETIC DEMO ONLY: look up alpha or beta in the handwritten fixture dictionary; unknown keys return an error. This is not an installed production tool.",
+        "parameters": {
+          "type": "object",
+          "properties": {"key": {"type": "string"}},
+          "required": ["key"],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}

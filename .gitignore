@@ -1,95 +1,11 @@
-# Dependencies
-node_modules/
-.venv
-.venv.nosync/
 __pycache__/
 *.pyc
-
-# Build
-.next/
-.next_trash*/
-dist/
-*.egg-info/
-
-# Environment
+.venv/
 .env
 .env.*
 !.env.example
-!.env.template
-
-# IDE
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-# macOS Finder/iCloud duplicate copies ("foo 2.png")
-* 2.*
-
-# Generated media & training artifacts
-outputs/
-checkpoints/
-
-# Third-party downloadable binaries — see assets/**/asset_manifest.json download_url
-assets/**/*.vrm
-assets/**/*.glb
-assets/audio/*.ogg
-
-# Docker volumes
-docker/data/
-
-# Prisma
-packages/database/prisma/migrations/migration_lock.toml
-
-# Turbo
-.turbo/
-
-# Dev logs
-logs/
-
-# MinIO local data
-minio_data/
-
-# Test
-.coverage
-htmlcov/
-.pytest_cache/
-
-# Unity generated files
-unity/**/Library/
-unity/**/Temp/
-unity/**/Obj/
-unity/**/Build/
-unity/**/Builds/
-unity/**/Logs/
-unity/**/UserSettings/
-unity/**/*.csproj
-unity/**/*.sln
-unity/**/*.user
-
-# Tauri desktop shell
-apps/desktop/src-tauri/target/
-apps/desktop/src-tauri/gen/
-
-# Mixamo-licensed sample models (fetch with scripts/fetch_samples.sh)
-assets/vtubers/samples/mixamo/
-
-# installed .soul model files
-assets/vtubers/souls/
-assets/souls/
-
-# Local character imports and licensed source motion. Preserve privately when
-# moving machines; see docs/macbook-windows-5080.md and the samples license.
-unity/SoulForgeUnityClient/Assets/SoulForge/Models/
-unity/SoulForgeUnityClient/Assets/SoulForge/Models.meta
-unity/SoulForgeUnityClient/Assets/SoulForge/Animations/Mixamo/
-unity/SoulForgeUnityClient/Assets/SoulForge/Animations/Mixamo.meta
-
-# Private database / memory backups and runtime state
-scripts/backup/*.sql
-scripts/backup/*.dump
-*.sqlite3
-*.sqlite3-shm
-*.sqlite3-wal
+secrets.env
+/release-artifacts/
+/release-reports/
+/training-demo/
+/colleague/training-demo/

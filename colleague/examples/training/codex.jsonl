@@ -1,0 +1,12 @@
+{"type":"session_meta","payload":{"id":"synthetic-codex-session","cli_version":"synthetic-fixture-1"}}
+{"type":"turn_context","payload":{"model":"synthetic-model"}}
+{"type":"response_item","payload":{"type":"message","id":"synthetic-u1","role":"user","content":[{"type":"input_text","text":"Synthetic demo: look up alpha in the fixture dictionary."}]}}
+{"type":"response_item","payload":{"type":"function_call","call_id":"synthetic-c1","name":"fixture_lookup","arguments":"{\"key\":\"alpha\"}"}}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"synthetic-c1","output":"{\"value\":2}","is_error":false}}
+{"type":"response_item","payload":{"type":"message","id":"synthetic-a1","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"In this synthetic fixture, alpha has value 2."}]}}
+{"type":"response_item","payload":{"type":"message","id":"synthetic-u2","role":"user","content":[{"type":"input_text","text":"Synthetic demo: look up missing; if absent, use beta."}]}}
+{"type":"response_item","payload":{"type":"function_call","call_id":"synthetic-c2","name":"fixture_lookup","arguments":"{\"key\":\"missing\"}"}}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"synthetic-c2","output":"{\"error\":\"not_found\"}","is_error":true}}
+{"type":"response_item","payload":{"type":"function_call","call_id":"synthetic-c3","name":"fixture_lookup","arguments":"{\"key\":\"beta\"}"}}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"synthetic-c3","output":"{\"value\":3}","is_error":false}}
+{"type":"response_item","payload":{"type":"message","id":"synthetic-a2","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The synthetic fixture has no missing entry; beta has value 3."}]}}

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "empty",
+    "input": [],
+    "expected": []
+  },
+  {
+    "id": "sum_sort_zero",
+    "input": [
+      {
+        "key": "beta",
+        "delta": 5
+      },
+      {
+        "key": "alpha",
+        "delta": 2
+      },
+      {
+        "key": "beta",
+        "delta": -5
+      }
+    ],
+    "expected": [
+      {
+        "key": "alpha",
+        "total": 2
+      },
+      {
+        "key": "beta",
+        "total": 0
+      }
+    ]
+  },
+  {
+    "id": "duplicate",
+    "input": [
+      {
+        "key": "item",
+        "delta": 2
+      },
+      {
+        "key": "item",
+        "delta": 3
+      }
+    ],
+    "expected": [
+      {
+        "key": "item",
+        "total": 5
+      }
+    ]
+  },
+  {
+    "id": "invalid_bool",
+    "input": [
+      {
+        "key": "item",
+        "delta": true
+      }
+    ],
+    "raises": "TypeError"
+  },
+  {
+    "id": "invalid_key_case",
+    "input": [
+      {
+        "key": "Item",
+        "delta": 1
+      }
+    ],
+    "raises": "ValueError"
+  }
+]
