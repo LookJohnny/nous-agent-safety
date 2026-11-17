@@ -15,7 +15,9 @@ That version contains the portable AI identity and companion-runtime implementat
 
 ## Public scope
 
-The initial Nous publication is the local trajectory, privacy, review, and training-data quality toolkit under `colleague/`, together with its offline tests and synthetic examples. This is a developer alpha, with real-provider acceptance still incomplete.
+Nous is an Agent safety project centered on emotion-related and behavioral-risk monitoring, protective controls, and readable risk signals. Trajectory collection is an optional supporting component.
+
+The initial public source snapshot contains that local trajectory, privacy, review, and training-data quality component under `colleague/`, together with its offline tests and synthetic examples. The broader monitoring, protection, and interface prototypes are not included in this snapshot. The published trajectory component is a developer alpha, with real-provider acceptance still incomplete.
 
 Private research and patent documents, Lens research assets, model weights, hosted data infrastructure, real user conversations, credentials, local acceptance artifacts, and private Git history are excluded. The public source snapshot is committed on top of the existing public SoulForge history.
 

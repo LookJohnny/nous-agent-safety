@@ -1,54 +1,61 @@
 # Nous Agent Safety
 
-**Local collection, review, and export of AI coding trajectories.**
+**Agent safety through emotion-related monitoring, protective controls, and readable risk signals.**
 
 English · [简体中文](README.zh-CN.md)
 
-Nous Agent Safety is a local toolkit for turning supported Claude Code and Codex interactions into inspectable records and training JSONL. It combines project-level collection controls, privacy filtering, review evidence, and dataset validation so that collected activity can be assessed before it becomes training data.
+Nous is an Agent safety project focused on helping people **observe AI behavior, recognize risk, and retain control over AI-assisted work**. Its core functions are emotion and behavioral-risk monitoring, safety controls for supported interactions, and human-readable feedback about what the system has observed.
 
-The public implementation focuses on **trajectory data quality and traceability**. It includes the CLI, adapters, review and export pipeline, tests, and synthetic examples under [`colleague/`](colleague/).
+Trajectory collection supports this work through audit records and reviewed training-data export. It is an optional supporting component of the project.
 
-> **Developer alpha — `0.1.0a9`.** Collection is off by default. Real-provider, multi-turn acceptance remains incomplete. See [current limitations](#current-limitations) and the [acceptance record](docs/STATUS.md).
+## Core focus
 
-## Capabilities
+The broader project contains development prototypes for three complementary functions.
 
-| Area | Implemented behavior |
-| --- | --- |
-| Local collection | Explicit project opt-in; independent `Stop` hooks for supported Claude Code and Codex transcripts. |
-| Historical import | A plan-then-import workflow for local session files, including archived Codex sessions and supported compressed logs. Import does not enable continuous collection. |
-| Privacy filtering | Redaction of recognized sensitive values and conservative handling of file-tool content when repository exclusions cannot be verified. |
-| Review and export | Profile-specific structural checks, content-bound review evidence, explicit preference labels, and rejection reasons for ineligible samples. |
-| Tool trajectories | Supported request snapshots and multi-request function-tool episodes, with separate review of intermediate tool decisions. |
-| Dataset validation | File checksums, row counts, source-to-sample links, tool call/result checks, duplicate and conflicting-label checks, and grouped train/evaluation splits. |
+### Monitor emotion-related and behavioral signals
 
-A collected record is a **candidate**, not an automatic training label. Missing context, incomplete tool chains, unsupported fields, or insufficient review evidence can prevent export to a training file.
+Observe the tone and emotional expression of AI responses, and surface signals associated with hostility, demeaning language, excessive agreement, or possible fabrication. These readouts help users identify interactions that deserve closer inspection.
 
-## Data flow
+For supported models with accessible internal states, the project includes direct model-state monitoring prototypes. For closed-model APIs, a reader model can assess the output that is available to it. These two modes have different visibility and timing: reading a closed model's reply does not reveal that model's hidden state or provide a warning before the reply exists.
 
-```mermaid
-flowchart LR
-    A[Authorized local inputs] --> B[Parse and filter]
-    B --> C[Normalized candidate records]
-    C --> D[Profile checks and review evidence]
-    D -->|Eligible| E[Training JSONL]
-    D -->|Ineligible| F[Rejection reasons]
-    E --> G[Validate, audit, and split]
-```
+Here, “emotion” refers to estimated expression and model-state signals. A readout does not establish that an AI has subjective feelings. Fabrication and excessive-agreement indicators remain experimental.
 
-Candidate records retain supported observations, provenance, quality flags, and evidence. Exported training rows contain the selected training fields; `manifest.json` links them back to their source records. Review evidence is bound to content digests, so an earlier acceptance cannot simply be reused after the relevant content changes.
+### Apply safety controls
 
-## Quick start
+The safety prototypes include agent hooks and policy checks for recognized secret exposure, sensitive file access, selected high-impact tool actions, and signs of prompt injection in external content. Depending on the supported integration and active policy, an event can be recorded, sensitive values masked, an operation blocked, or human approval requested.
 
-### Requirements
+These controls operate at the integration points they cover. Their behavior depends on configuration, available dependencies, and the host agent's permission system; they are not a guarantee that every unsafe action will be detected or prevented.
 
-- **Python 3.11–3.14** for the configured test matrix. Core collection, export, and validation use the Python standard library.
-- **macOS or Linux** for the local toolkit. Linux CI checks offline behavior; desktop integration acceptance remains separate. Windows is not supported by the current implementation.
-- **Git** for cloning and repository file-exclusion checks. If exclusions cannot be verified, affected file-tool content is omitted and marked with a quality gap.
-- **Python 3.14** is required for `.jsonl.zst` history import through the standard-library `compression.zstd` module.
+### Make AI behavior easier to understand
 
-The controlled code-task verifier additionally requires macOS `sandbox-exec`. The optional training smoke test has [separate dependencies](colleague/docs/TRAINING_TRAINER.md).
+Risk labels, relevant response segments, action records, and HUD or console views make the available observations easier to inspect. The aim is to help a person understand **what was flagged, what action was taken, and what evidence is available**.
 
-### Run the synthetic example
+Readable signals and explanations of safety decisions support oversight. They do not amount to a complete causal explanation of a model's reasoning.
+
+## Components and availability
+
+The project's product scope is broader than the code currently published here.
+
+| Component | Role in Nous | Current availability |
+| --- | --- | --- |
+| Emotion and risk monitoring | Model-state or reader-based signals for supported models and interactions | Research and development prototypes; not included in this public snapshot |
+| Agent protection | Safety hooks, policy decisions, sensitive-data handling, and human approval paths | Development prototypes; full runtime and dependencies not included here |
+| Readable interfaces | Risk annotations, HUD views, and monitoring consoles | Development prototypes; not included here |
+| Trajectory and training-data tools | Optional collection, review, audit, and JSONL export | Included under [`colleague/`](colleague/); component version **`0.1.0a9`**, developer alpha |
+
+**The current checkout provides the trajectory component.** It does not install the full monitoring engine, protection runtime, or HUD. Private research, patent materials, model weights, and real user datasets remain outside this public distribution. The trajectory component's version and test results do not describe a stable release of the complete safety product.
+
+## Supporting feature: trajectories and training JSONL
+
+The published tools support explicit project opt-in, supported Claude Code and Codex session imports, privacy filtering, content-bound review evidence, and profile-specific JSONL export. Historical import and collection are separate operations; collection is off by default.
+
+Records first become candidates. Only eligible samples enter training files, and rejected samples receive diagnostic reasons. Exported datasets include source links, file hashes, and validation metadata. These checks support inspection and consistency; they do not establish factual correctness or permission to reuse the content.
+
+See the [trajectory guide](docs/TRAJECTORIES.md) for requirements, integration steps, export profiles, validation, and grouped dataset splits.
+
+### Try the published component
+
+This example exercises the **auxiliary trajectory pipeline**, using synthetic data. Core commands use the Python standard library on macOS/Linux with Python 3.11 or later; the configured CI matrix covers 3.11–3.14. Git is needed for cloning and repository file-exclusion checks. Additional capabilities and their requirements are described in the [guide](docs/TRAJECTORIES.md#requirements).
 
 ```bash
 git clone https://github.com/LookJohnny/nous-agent-safety.git
@@ -60,74 +67,18 @@ python3 -B hooks/nous_training.py validate --dataset "$nous_demo_root/dataset"
 python3 -B hooks/nous_training.py audit --dataset "$nous_demo_root/dataset" --require-training-rows
 ```
 
-The demo uses handwritten synthetic fixtures in temporary local state. It does not read real session history, install hooks, enable collection, or call a model provider. The generated data is marked `synthetic: true`; it demonstrates the pipeline, not real task quality or model performance. Output directories must not already exist.
+The demo does not read real sessions, install safety or collection hooks, or call a model provider. Its generated records are marked `synthetic: true`.
 
-The default demo produces:
+## Development and validation
 
-| File | Purpose |
-| --- | --- |
-| `trajectories.jsonl` | Normalized candidate records, including candidates that do not qualify for training. |
-| `preferences.jsonl` | Explicit preference records and their evidence. |
-| `sft.jsonl` | Samples that pass the selected supervised fine-tuning export checks. |
-| `dpo.jsonl` | Eligible, explicitly labeled preference pairs. |
-| `rejected.jsonl` | Rejection stages and reason codes, without copying the rejected conversation body. |
-| `manifest.json` | Export profile, file statistics and hashes, and per-row source links. |
+Nous remains under development. Monitoring readouts depend on the model, available context, and operating conditions. Alerts can be wrong or miss a risk; deployment decisions require evaluation in the intended setting.
 
-`validate` checks the exported dataset and returns `valid: true` on success. `audit --require-training-rows` also requires at least one SFT or DPO row. With real inputs, an empty training file can be the correct result when evidence or context is insufficient.
+The public [GitHub Actions workflow](https://github.com/LookJohnny/nous-agent-safety/actions/workflows/training.yml) checks the **trajectory component** across Ubuntu/macOS and Python 3.11–3.14. It runs offline tests and package checks. It does not measure emotion-monitoring accuracy or validate the complete Agent safety product.
 
-## Work with real sessions
-
-Choose the entry point that matches the data you have:
-
-| Goal | Entry point | Scope |
-| --- | --- | --- |
-| Collect future session updates | [`setup` and `doctor`](colleague/docs/TRAINING.md#接入-claude-code-和-codex) | `setup` installs hooks and enables the selected project. `doctor` inspects configuration; it does not prove that the platform has executed a hook. |
-| Import previous work | [`history-scan` and `history-import`](colleague/docs/TRAINING_HISTORY.md) | Discover local sources, inspect the private plan, then import. The plan can contain local paths and session identifiers. |
-| Capture request-level context | [Request observer](colleague/docs/TRAINING_OBSERVER.md) and [episode capture](colleague/docs/TRAINING_EPISODE_CAPTURE.md) | Explicit integration for supported native request/response shapes; ordinary transcript hooks do not provide this context automatically. |
-| Review and prepare a dataset | [Review and export guide](colleague/docs/TRAINING.md), [diagnostics](colleague/docs/TRAINING_DIAGNOSE.md), and [grouped splits](colleague/docs/TRAINING_SPLIT.md) | Inspect candidates, supply appropriate evidence, export, validate, and keep related source groups together when splitting. |
-
-Local import, review, and export do not upload data. Project-level collection can be disabled with `disable --project ...`; `--purge` also removes that project's training cache. Previously exported datasets, their copies, and the platforms' original session logs are outside that cache deletion scope.
-
-## Training formats
-
-| Export profile | Training representation | Scope |
-| --- | --- | --- |
-| `trl` | SFT `messages`; DPO `prompt` / `chosen` / `rejected`; optional `tools` | Supported transcript records; function arguments are JSON objects. DPO requires explicit preference evidence. |
-| `openai` | Chat-message representation with JSON-string function arguments | An argument-encoding variant, not a complete OpenAI fine-tuning upload contract. |
-| `codemode-events-v1` | String `prompt` / `completion` pairs | Supported visible Codex Code Mode events; SFT only. |
-| `request-sft-v1` | String `prompt` / `completion` pairs | Supported observed requests with final-text responses; SFT only. |
-| `request-episode-sft-v1` | String `prompt` / `completion` pairs | Supported multi-request function-tool episodes; intermediate targets require step-specific review; SFT only. |
-
-Profile names describe this repository's export contracts. Consumers still need a compatible loader, model template, and loss configuration. For the string prompt/completion profiles, the training smoke tool checks completion-only supervision, including masking tool results in the prompt. See the [format guide](colleague/docs/TRAINING.md) and [training smoke documentation](colleague/docs/TRAINING_TRAINER.md).
-
-## Verification
-
-From the repository root:
-
-```bash
-nous_check_root="$(mktemp -d)"
-python3 -I -S -B colleague/scripts/training_release_check.py \
-  --report "$nous_check_root/release-check.json"
-python3 -I -S -B colleague/scripts/training_build.py \
-  --out "$nous_check_root/artifacts"
-```
-
-The source check runs the included tests and offline synthetic checks. The builder creates allowlisted `.tar.gz` and `.zip` packages, hashes, and a build report, and runs a smoke check on the extracted tar package. Neither command validates real-provider capture or model quality.
-
-[GitHub Actions](https://github.com/LookJohnny/nous-agent-safety/actions/workflows/training.yml) is configured for Ubuntu/macOS × Python 3.11–3.14. Consult the run for the relevant commit for actual results and skips. Packaging details and verification boundaries are documented in the [release guide](colleague/docs/TRAINING_RELEASE.md).
-
-## Current limitations
-
-- **Platform compatibility is bounded.** Transcript formats and supported request shapes are version-sensitive. Missing native context is not reconstructed by guessing. Unknown or unsupported structures can remain candidates or be rejected, depending on the input path.
-- **Real-provider acceptance is incomplete.** The documented controlled attempts on 2026-11-16 did not produce strict SFT samples. Historical fixture-backed CLI checks and offline tests do not establish end-to-end compatibility with every Claude Code or Codex release. See [status and next acceptance steps](docs/STATUS.md).
-- **Privacy filtering is not an anonymity guarantee.** Recognized secrets and supported personal-information patterns are filtered; names, commercial secrets, and other sensitive content can still require manual review.
-- **Validation has a defined scope.** Hashes, source links, and review records support consistency checks. They do not independently establish factual correctness, reviewer identity, content rights, or improved model performance. DPO preferences are not inferred from retries or timestamps.
-- **Hidden reasoning and multimodal training are outside the supported scope.** Unsupported reasoning, encrypted context, and media are not converted into complete training examples. Full executable replay and production training orchestration are not provided.
-
-This public distribution does not include the full Lens engine, private research or patent materials, model weights, a hosted data service, or real user datasets. Collection permission is separate from permission to publish, sell, or otherwise reuse the underlying content.
+Real-provider multi-turn acceptance for the published trajectory component is also incomplete. Its [acceptance record](docs/STATUS.md) distinguishes offline checks, controlled attempts, and outstanding work. [Build and verification instructions](docs/TRAJECTORIES.md#verification) are available separately.
 
 ## Repository history and licensing
 
-This repository was previously **SoulForge**, a portable AI identity and companion-runtime project. The earlier implementation is preserved in the [legacy branch](https://github.com/LookJohnny/nous-agent-safety/tree/legacy/soulforge-20261118) and at the [pre-migration commit](https://github.com/LookJohnny/nous-agent-safety/tree/614645cf72277b39196441d91b9fe5e2931f9324). Existing stars reflect the repository's full history. See the [migration record](docs/MIGRATION.md).
+This repository was previously **SoulForge**, a portable AI identity and companion-runtime project. The earlier implementation remains in the [legacy branch](https://github.com/LookJohnny/nous-agent-safety/tree/legacy/soulforge-20261118) and at the [pre-migration commit](https://github.com/LookJohnny/nous-agent-safety/tree/614645cf72277b39196441d91b9fe5e2931f9324). Existing stars reflect the repository's full history. See the [migration record](docs/MIGRATION.md).
 
 The historical SoulForge SDK and specifications retain their original MIT notices. Publication of the current Nous source does not grant a new open-source license. Existing per-file and third-party notices remain applicable.
